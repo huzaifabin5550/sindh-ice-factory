@@ -36,6 +36,10 @@ async function loadReport() {
     .filter(t => t.type === 'Credit')
     .reduce((sum, t) => sum + (t.total || 0), 0);
 
+  const payments = txns
+    .filter(t => t.type === 'Payment')
+    .reduce((sum, t) => sum + (t.total || 0), 0);
+
   const totalIce = txns
     .filter(t => t.type === 'Credit' || t.type === 'Cash')
     .reduce((sum, t) => sum + (t.qty || 0), 0);
@@ -81,8 +85,7 @@ function renderTable(txns) {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="text-align:center;
-        padding:2rem; color:#aaa;">
+      <div style="text-align:center; padding:2rem; color:#aaa;">
         <div style="font-size:36px;">📋</div>
         <p style="margin-top:10px;">
           Is date mein koi transaction nahi
@@ -95,6 +98,7 @@ function renderTable(txns) {
     <table class="txn-table">
       <thead>
         <tr>
+          <th>Serial #</th>
           <th>Time</th>
           <th>Dealer</th>
           <th>Type</th>
@@ -128,9 +132,12 @@ function renderTable(txns) {
 
           return `
             <tr>
+              <td style="font-weight:700; color:#1565C0;">
+                ${t.serial_number || '—'}
+              </td>
               <td style="font-size:13px;">${time}</td>
               <td style="font-weight:600;">
-                ${t.dealer_name || t.dealerName || 'Cash'}
+                ${t.dealer_name || 'Cash'}
               </td>
               <td>${typeBadge}</td>
               <td>${t.qty ? t.qty + ' blk' : '—'}</td>
@@ -143,3 +150,4 @@ function renderTable(txns) {
       </tbody>
     </table>`;
 }
+ 
