@@ -10,27 +10,29 @@
 
 <nav class="navbar">
   <div class="navbar-brand">
-    🧊 Sindh Ice Factory
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
   </div>
-   <div class="navbar-links">
+  <div class="navbar-links">
     <a href="/">POS</a>
     <a href="/dealers">Dealers</a>
     <a href="/reports" class="active">Reports</a>
     <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
-</div>
+  </div>
 </nav>
 
 <div class="container">
 
+  <!-- Header -->
   <div style="margin-bottom:16px;">
-    <h2 style="font-size:20px; font-weight:600;">
-      Daily Reports
-    </h2>
+    <h2 style="font-size:20px; font-weight:600;">Daily Reports</h2>
     <p style="font-size:13px; color:#888; margin-top:3px;">
       Aaj ki complete summary
     </p>
   </div>
 
+  <!-- Date Filter -->
   <div class="card" style="padding:12px 16px;">
     <div style="display:flex; align-items:center; gap:12px;">
       <label style="font-size:14px; color:#555; font-weight:500;">
@@ -47,6 +49,7 @@
     </div>
   </div>
 
+  <!-- Stats -->
   <div class="stats-grid"
     style="grid-template-columns:repeat(2,1fr);">
     <div class="stat-card">
@@ -67,12 +70,11 @@
     </div>
   </div>
 
+  <!-- Filter Buttons -->
   <div class="card" style="padding:12px 16px;">
     <div class="toggle-group">
       <button class="toggle-btn active-blue"
-        id="filterAll" onclick="setFilter('all')">
-        Sab
-      </button>
+        id="filterAll" onclick="setFilter('all')">Sab</button>
       <button class="toggle-btn"
         id="filterCredit" onclick="setFilter('Credit')">
         Sirf Credit
@@ -88,9 +90,24 @@
     </div>
   </div>
 
+  <!-- Transactions Table -->
   <div class="card">
     <div class="card-title">Transactions</div>
     <div id="reportTable"></div>
+  </div>
+
+  <!-- Monthly Summary -->
+  <div style="margin-top:24px; margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:600;">
+      📅 Monthly Summary
+    </h2>
+    <p style="font-size:13px; color:#888; margin-top:3px;">
+      Har mahine ki complete summary
+    </p>
+  </div>
+
+  <div class="card">
+    <div id="monthlySummary"></div>
   </div>
 
 </div>
