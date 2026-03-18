@@ -171,3 +171,150 @@ async function loadMonthlySummary() {
       </tbody>
     </table>`;
 }
+// ── Receipt Search ──
+function handleSearchEnter(e) {
+  if (e.key === 'Enter') searchReceipt();
+}
+
+async function searchReceipt() {
+  const serial = document.getElementById('searchSerial')
+    .value.trim().toUpperCase();
+
+  if (!serial) {
+    alert('❌ Serial number dalein! e.g. REC-0001');
+    return;
+  }
+
+  const container = document.getElementById('searchResult');
+  container.innerHTML = '<p style="color:#888;">Dhundh raha hoon...</p>';
+
+  const txn = await DB.searchTransaction(serial);
+
+  if (txn.error) {
+    container.innerHTML = `
+      <div style="background:#FFEBEE; border:1px solid #EF9A9A;
+        border-radius:8px; padding:12px; color:#C62828;">
+        ❌ "${serial}" ki koi receipt nahi mili!
+      </div>`;
+    return;
+  }
+
+  const date = new Date(txn.date).toLocaleString('en-PK', {
+    dateStyle: 'medium', timeStyle: 'short'
+  });
+
+  let typeBadge = '';
+  if (txn.type === 'Credit')
+    typeBadge = '<span class="badge badge-blue">Credit</span>';
+  else if (txn.type === 'Cash')
+    typeBadge = '<span class="badge badge-green">Cash</span>';
+  else if (txn.type === 'Payment')
+    typeBadge = '<span class="badge badge-orange">Payment</span>';
+
+  container.innerHTML = `
+    <div style="background:#E3F2FD; border:1px solid #90CAF9;
+      border-radius:10px; padding:14px;">
+      <div style="display:flex; justify-content:space-between;
+        align-items:center; margin-bottom:10px;">
+        <span style="font-size:16px; font-weight:700;
+          color:#1565C0;">${txn.serial_number}</span>
+        ${typeBadge}
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr;
+        gap:8px; font-size:13px;">
+        <div><span style="color:#888;">Dealer:</span>
+          <strong>${txn.dealer_name || 'Cash'}</strong></div>
+        <div><span style="color:#888;">Date:</span>
+          <strong>${date}</strong></div>
+        <div><span style="color:#888;">Quantity:</span>
+          <strong>${txn.qty ? txn.qty + ' blocks' : '—'}</strong></div>
+        <div><span style="color:#888;">Price/Block:</span>
+          <strong>${txn.price ? 'PKR ' + txn.price.toLocaleString() : '—'}</strong></div>
+      </div>
+      <div style="display:flex; justify-content:space-between;
+        align-items:center; margin-top:12px; padding-top:10px;
+        border-top:1px solid #90CAF9;">
+        <span style="font-size:18px; font-weight:700;
+          color:#0D47A1;">
+          Total: PKR ${(txn.total || 0).toLocaleString()}
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary"
+            style="width:auto; padding:8px 14px; font-size:13px;"
+            onclick="printSearchReceipt(${JSON.stringify(txn).replace(/"/g, '&quot;')})">
+            🖨️ Print
+          </button>
+          <button class="btn btn-danger"
+            style="width:auto; padding:8px 14px; font-size:13px;"
+            onclick="deleteSearchReceipt(${txn.id}, '${txn.serial_number}')">
+            🗑 Delete
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function printSearchReceipt(txn) {
+  const date = new Date(txn.date).toLocaleString('en-PK', {
+    dateStyle: 'medium', timeStyle: 'short'
+  });
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html><head><title>Receipt ${txn.serial_number}</title></head>
+    <body style="font-family:Arial; max-width:400px; margin:0 auto; padding:20px;">
+      <div style="text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:12px;">
+        <div style="font-size:22px; font-weight:bold; color:#1565C0;">🧊 Sindh Ice Factory</div>
+        <div style="font-size:12px; color:#888;">Official Sales Receipt</div>
+        <div style="font-size:12px; color:#aaa;">${date}</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Serial No.</span>
+        <span style="font-weight:700; color:#1565C0;">${txn.serial_number}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Dealer</span>
+        <span style="font-weight:600;">${txn.dealer_name || 'Cash'}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Type</span>
+        <span style="font-weight:600;">${txn.type}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Quantity</span>
+        <span style="font-weight:700; font-size:18px; color:#1565C0;">${txn.qty ? txn.qty + ' blocks' : '—'}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Price/Block</span>
+        <span style="font-weight:600;">${txn.price ? 'PKR ' + txn.price.toLocaleString() : '—'}</span>
+      </div>
+      ${txn.reference ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Reference</span>
+        <span style="font-weight:600;">${txn.reference}</span>
+      </div>` : ''}
+      <div style="display:flex; justify-content:space-between; padding:10px 0 0; font-size:18px; font-weight:bold; color:#1565C0;">
+        <span>Total</span>
+        <span>PKR ${(txn.total || 0).toLocaleString()}</span>
+      </div>
+      <div style="text-align:center; color:#aaa; font-size:12px; margin-top:16px; border-top:1px dashed #ccc; padding-top:10px;">
+        Shukriya! Dobara tashreef lain. 🙏
+      </div>
+      <div style="text-align:center; margin-top:20px;">
+        <button onclick="window.print()" style="background:#1565C0; color:white; border:none; padding:10px 24px; border-radius:8px; font-size:15px; cursor:pointer;">🖨️ Print</button>
+        <button onclick="window.close()" style="background:#eee; color:#333; border:none; padding:10px 24px; border-radius:8px; font-size:15px; cursor:pointer; margin-left:10px;">✖ Band</button>
+      </div>
+    </body></html>
+  `);
+  printWindow.document.close();
+}
+
+async function deleteSearchReceipt(id, serial) {
+  if (!confirm('⚠️ Kya aap sure hain?\n' + serial + ' delete ho jayegi!')) return;
+  await DB.deleteTransaction(id);
+  document.getElementById('searchResult').innerHTML = `
+    <div style="background:#E8F5E9; border:1px solid #A5D6A7;
+      border-radius:8px; padding:12px; color:#2E7D32;">
+      ✅ Receipt delete ho gayi!
+    </div>`;
+  document.getElementById('searchSerial').value = '';
+}
+ 
