@@ -222,10 +222,10 @@ def get_dealer_transactions(dealer_id):
     conn.close()
     return [dict(t) for t in txns]
 
-def get_transactions_by_date(date):
+ def get_transactions_by_date(date):
     conn = get_db()
     txns = conn.execute(
-        'SELECT * FROM transactions WHERE DATE(date) = DATE(?) ORDER BY date DESC',
+        'SELECT * FROM transactions WHERE substr(date,1,10) = ? ORDER BY date DESC',
         (date,)
     ).fetchall()
     conn.close()
