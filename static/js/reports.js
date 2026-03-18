@@ -130,7 +130,7 @@ function renderTable(txns) {
             <tr>
               <td style="font-size:13px;">${time}</td>
               <td style="font-weight:600;">
-                ${t.dealer_name || 'Cash'}
+                ${t.dealer_name || t.dealerName || 'Cash'}
               </td>
               <td>${typeBadge}</td>
               <td>${t.qty ? t.qty + ' blk' : '—'}</td>

@@ -69,13 +69,22 @@ def init_db():
     print("✅ Database ready!")
 
 # ── Serial Number Generator ──
-def generate_serial():
+ def generate_serial():
     conn = get_db()
-    count = conn.execute(
-        'SELECT COUNT(*) as c FROM transactions'
-    ).fetchone()['c']
+    # Max serial number se next generate karo
+    last = conn.execute('''
+        SELECT serial_number FROM transactions
+        WHERE serial_number LIKE "REC-%"
+        ORDER BY id DESC LIMIT 1
+    ''').fetchone()
     conn.close()
-    return f"REC-{str(count + 1).zfill(4)}"
+    if last:
+        try:
+            num = int(last['serial_number'].split('-')[1])
+            return f"REC-{str(num + 1).zfill(4)}"
+        except:
+            pass
+    return "REC-0001"
 
 # ── User Functions ──
 def verify_user(username, password):
@@ -134,18 +143,19 @@ def delete_dealer(id):
     conn.commit()
     conn.close()
 
-def update_dealer_balance(dealer_id, type, amount):
+ def update_dealer_balance(dealer_id, type, amount):
     conn = get_db()
+    dealer_id = int(dealer_id)
     if type == 'Credit':
         conn.execute('''
             UPDATE dealers SET balance = balance + ?
             WHERE id = ?
-        ''', (amount, dealer_id))
+        ''', (float(amount), dealer_id))
     elif type == 'Payment':
         conn.execute('''
             UPDATE dealers SET balance = balance - ?
             WHERE id = ?
-        ''', (amount, dealer_id))
+        ''', (float(amount), dealer_id))
     conn.commit()
     conn.close()
 
