@@ -1,0 +1,437 @@
+/* ========================================
+   SINDH ICE FACTORY - Main Styles
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: #F0F4F8;
+  color: #1a1a2e;
+  font-size: 15px;
+}
+
+/* ── Navigation ── */
+.navbar {
+  background: #1565C0;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-links a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.navbar-links a:hover,
+.navbar-links a.active {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* ── Page Container ── */
+.container {
+  max-width: 850px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+/* ── Cards ── */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #E3EAF3;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+/* ── Form Elements ── */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.field-label {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #D0DCF0;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+  color: #1a1a2e;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: #1565C0;
+}
+
+/* ── Grid ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.88; }
+
+.btn-primary {
+  background: #1565C0;
+  color: white;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.btn-success {
+  background: #2E7D32;
+  color: white;
+}
+
+.btn-danger {
+  background: #C62828;
+  color: white;
+}
+
+.btn-secondary {
+  background: #ECEFF1;
+  color: #444;
+}
+
+/* ── Type Toggle Buttons ── */
+.toggle-group {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #D0DCF0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active-blue {
+  background: #E3F2FD;
+  border-color: #1565C0;
+  color: #1565C0;
+  font-weight: 600;
+}
+
+.toggle-btn.active-green {
+  background: #E8F5E9;
+  border-color: #2E7D32;
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.toggle-btn.active-orange {
+  background: #FFF8E1;
+  border-color: #F9A825;
+  color: #E65100;
+  font-weight: 600;
+}
+
+/* ── Total Box ── */
+.total-box {
+  background: #E3F2FD;
+  border: 1.5px solid #90CAF9;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.total-box .label {
+  font-size: 15px;
+  color: #1565C0;
+  font-weight: 500;
+}
+
+.total-box .amount {
+  font-size: 30px;
+  font-weight: 700;
+  color: #0D47A1;
+}
+
+/* ── Stats Cards ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #E3EAF3;
+}
+
+.stat-card .s-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.stat-card .s-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1565C0;
+}
+
+/* ── Dealer List ── */
+.dealer-item {
+  background: white;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border: 1px solid #E3EAF3;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+
+.dealer-item:hover {
+  border-color: #1565C0;
+}
+
+.dealer-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #E3F2FD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #1565C0;
+  flex-shrink: 0;
+}
+
+.dealer-info { flex: 1; }
+
+.dealer-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.dealer-meta {
+  font-size: 12px;
+  color: #888;
+  margin-top: 3px;
+}
+
+.dealer-balance {
+  text-align: right;
+}
+
+.balance-amount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.balance-amount.debt { color: #C62828; }
+.balance-amount.clear { color: #2E7D32; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-blue { background: #E3F2FD; color: #1565C0; }
+.badge-green { background: #E8F5E9; color: #2E7D32; }
+.badge-orange { background: #FFF8E1; color: #E65100; }
+.badge-red { background: #FFEBEE; color: #C62828; }
+.badge-purple { background: #EDE7F6; color: #4527A0; }
+
+/* ── Transaction Table ── */
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.txn-table th {
+  background: #F5F7FA;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.txn-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #F0F4F8;
+  color: #333;
+}
+
+.txn-table tr:last-child td { border-bottom: none; }
+.txn-table tr:hover td { background: #F8FAFD; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #1a1a2e;
+}
+
+/* ── Receipt ── */
+.receipt-box {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 380px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.receipt-header {
+  text-align: center;
+  border-bottom: 1px dashed #ccc;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.receipt-company {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1565C0;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+.receipt-row .r-label { color: #777; }
+.receipt-row .r-value { font-weight: 600; }
+
+.receipt-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #1565C0;
+  margin-top: 6px;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #ccc;
+}
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.text-red { color: #C62828; }
+.text-green { color: #2E7D32; }
+.text-blue { color: #1565C0; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+
+/* ── Mobile Friendly ── */
+@media (max-width: 600px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .navbar-links a { margin-left: 10px; font-size: 13px; }
+  .total-box .amount { font-size: 24px; }
+}

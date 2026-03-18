@@ -1,0 +1,157 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sindh Ice Factory — POS</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    🧊 Sindh Ice Factory
+  </div>
+  <div class="navbar-links">
+    <a href="/" class="active">POS</a>
+    <a href="/dealers">Dealers</a>
+    <a href="/reports">Reports</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Customer Type</div>
+    <div class="toggle-group">
+      <button class="toggle-btn active-blue" id="btnDealer"
+        onclick="setCustomerType('dealer')">
+        👤 Registered Dealer
+      </button>
+      <button class="toggle-btn" id="btnWalkin"
+        onclick="setCustomerType('walkin')">
+        💵 Walk-in Cash
+      </button>
+    </div>
+  </div>
+
+  <div class="card" id="dealerSection">
+    <div class="card-title">Dealer Select Karein</div>
+    <div class="field-group">
+      <label class="field-label">Dealer Name</label>
+      <select id="dealerSelect">
+        <option value="">— Dealer chunein —</option>
+      </select>
+    </div>
+    <div class="card-title" style="margin-top:10px;">
+      Transaction Type
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn active-blue" id="btnCredit"
+        onclick="setTxnType('Credit')">
+        📋 Udhaar (Credit)
+      </button>
+      <button class="toggle-btn" id="btnCash"
+        onclick="setTxnType('Cash')">
+        💵 Naqd (Cash)
+      </button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="walkinSection">
+    <div class="card-title">Walk-in Customer</div>
+    <div style="background:#FFF8E1; border:1px solid #F9A825;
+      border-radius:8px; padding:10px 14px; font-size:13px;
+      color:#E65100; margin-bottom:12px;">
+      ⚠️ Sirf Cash — Koi record save nahi hoga
+    </div>
+    <div class="field-group">
+      <label class="field-label">Customer Name (optional)</label>
+      <input type="text" id="walkinName"
+        placeholder='Ya khali chhod dein — "Cash" print hoga' />
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ice & Pricing</div>
+    <div class="grid-2">
+      <div class="field-group">
+        <label class="field-label">Ice Blocks (Quantity)</label>
+        <input type="number" id="qty" min="1"
+          placeholder="e.g. 10" oninput="calcTotal()" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Price per Block (PKR)</label>
+        <input type="number" id="price" value="150"
+          oninput="calcTotal()" disabled />
+        <div style="display:flex; align-items:center;
+          gap:6px; margin-top:4px;">
+          <input type="checkbox" id="editPrice"
+            onchange="togglePrice()" />
+          <label for="editPrice" style="font-size:12px;
+            color:#888; cursor:pointer;">
+            Custom price set karein
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-box">
+      <span class="label">Total Amount</span>
+      <span class="amount" id="totalDisplay">PKR 0</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="field-group">
+        <label class="field-label">Date & Time</label>
+        <input type="datetime-local" id="txnDate" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Reference (optional)</label>
+        <input type="text" id="reference"
+          placeholder="e.g. Truck #4" />
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <button class="btn btn-primary" onclick="submitPOS()">
+      ✅ Submit & Receipt
+    </button>
+    <button class="btn btn-secondary" onclick="resetForm()"
+      style="width:100%;">
+      🔄 Reset
+    </button>
+  </div>
+
+</div>
+
+<div class="modal-overlay hidden" id="receiptModal">
+  <div class="receipt-box">
+    <div class="receipt-header">
+      <div class="receipt-company">🧊 Sindh Ice Factory</div>
+      <div style="font-size:12px; color:#888; margin-top:4px;">
+        Official Sales Receipt
+      </div>
+      <div style="font-size:12px; color:#aaa; margin-top:3px;"
+        id="receiptDate"></div>
+    </div>
+    <div id="receiptBody"></div>
+    <div class="receipt-footer">
+      Shukriya! Dobara tashreef lain. 🙏
+    </div>
+    <div class="grid-2" style="margin-top:14px; gap:8px;">
+      <button class="btn btn-primary" onclick="window.print()">
+        🖨️ Print
+      </button>
+      <button class="btn btn-secondary" onclick="closeReceipt()">
+        ✖ Band Karein
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/storage.js"></script>
+<script src="/static/js/pos.js"></script>
+</body>
+</html>
