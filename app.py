@@ -208,6 +208,22 @@ def api_monthly_summary():
 # ========================================
 # RUN SERVER
 # ========================================
-
+# ── Reset All Data ──
+@app.route('/reset', methods=['GET', 'POST'])
+@login_required
+def reset_data():
+    if request.method == 'POST':
+        data = request.json
+        password = data.get('password', '')
+        # Reset password check
+        if password != 'RESET@SIF2024':
+            return jsonify({'error': 'Galat password!'}), 401
+        conn = get_db()
+        conn.execute('DELETE FROM transactions')
+        conn.execute('UPDATE dealers SET balance = 0')
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Sab data delete ho gaya!'})
+    return render_template('reset.html')
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sindh Ice Factory — Reset</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
+  </div>
+  <div class="navbar-links">
+    <a href="/">POS</a>
+    <a href="/dealers">Dealers</a>
+    <a href="/reports">Reports</a>
+    <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div style="max-width:450px; margin:40px auto;">
+
+    <div style="background:#FFEBEE; border:2px solid #EF9A9A;
+      border-radius:14px; padding:24px; text-align:center;
+      margin-bottom:24px;">
+      <div style="font-size:48px;">⚠️</div>
+      <h2 style="font-size:20px; font-weight:700;
+        color:#C62828; margin-top:8px;">
+        Data Reset
+      </h2>
+      <p style="font-size:14px; color:#888; margin-top:8px;">
+        Yeh action sari transactions delete kar dega!<br>
+        Dealers ke balance zero ho jayenge!<br>
+        <strong>Yeh action undo nahi ho sakti!</strong>
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reset Confirmation</div>
+
+      <div id="errorBox" style="background:#FFEBEE;
+        border:1px solid #EF9A9A; border-radius:8px;
+        padding:10px 14px; font-size:13px; color:#C62828;
+        margin-bottom:16px; display:none;">
+      </div>
+
+      <div id="successBox" style="background:#E8F5E9;
+        border:1px solid #A5D6A7; border-radius:8px;
+        padding:10px 14px; font-size:13px; color:#2E7D32;
+        margin-bottom:16px; display:none;">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Reset Password</label>
+        <input type="password" id="resetPassword"
+          placeholder="Reset password dalein" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Confirm — Likho: "RESET KARO"</label>
+        <input type="text" id="confirmText"
+          placeholder='RESET KARO likho' />
+      </div>
+
+      <button class="btn btn-danger"
+        style="width:100%; padding:14px; font-size:16px;
+        margin-top:8px;"
+        onclick="doReset()">
+        🗑 Sab Data Delete Karo
+      </button>
+
+      <a href="/"
+        style="display:block; text-align:center;
+        margin-top:12px; color:#888; font-size:13px;">
+        ← Wapas jao
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+async function doReset() {
+  const password = document.getElementById('resetPassword').value;
+  const confirmText = document.getElementById('confirmText').value.trim();
+
+  // Double confirmation
+  if (confirmText !== 'RESET KARO') {
+    showError('Confirmation text galat hai! "RESET KARO" likho!');
+    return;
+  }
+
+  if (!password) {
+    showError('Password dalein!');
+    return;
+  }
+
+  // Final confirm
+  if (!confirm('⚠️ LAST WARNING!\nKya aap BILKUL sure hain?\nSari transactions DELETE ho jayengi!')) {
+    return;
+  }
+
+  try {
+    const res = await fetch('/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('errorBox').style.display = 'none';
+      document.getElementById('successBox').style.display = 'block';
+      document.getElementById('successBox').textContent =
+        '✅ ' + data.message + ' 3 second mein home page pe jayenge...';
+      document.getElementById('resetPassword').value = '';
+      document.getElementById('confirmText').value = '';
+      setTimeout(() => { window.location.href = '/'; }, 3000);
+    } else {
+      showError(data.error || 'Galat password!');
+    }
+  } catch (err) {
+    showError('Server error! Dobara try karein.');
+  }
+}
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.textContent = '❌ ' + msg;
+  box.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
+ 
+
+ 
