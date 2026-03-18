@@ -1,10 +1,9 @@
- // ========================================
+// ========================================
 // SINDH ICE FACTORY - POS Logic
 // ========================================
 
 let customerType = 'dealer';
 let txnType = 'Credit';
-const DEFAULT_PRICE = 150;
 
 // ── Page Load ──
 window.onload = async function () {
@@ -61,7 +60,7 @@ function togglePrice() {
   const priceInput = document.getElementById('price');
   priceInput.disabled = !cb.checked;
   if (!cb.checked) {
-    priceInput.value = DEFAULT_PRICE;
+    priceInput.value = '';
     calcTotal();
   }
 }
@@ -88,6 +87,11 @@ async function submitPOS() {
     return;
   }
 
+  if (!price || price <= 0) {
+    alert('❌ Price dalein!');
+    return;
+  }
+
   const total = qty * price;
   let dealerId = null;
   let displayName = '';
@@ -111,7 +115,7 @@ async function submitPOS() {
   }
 
   // Transaction Save
-  await DB.addTransaction({
+  const res = await DB.addTransaction({
     dealerId: dealerId,
     dealerName: displayName,
     type: finalType,
@@ -122,13 +126,18 @@ async function submitPOS() {
     date: date
   });
 
+  // Serial number
+  const serial = res.serial || 'REC-0000';
+
   showReceipt(
-    displayName, finalType, qty, price, total, date, reference
+    serial, displayName, finalType,
+    qty, price, total, date, reference
   );
 }
 
 // ── Receipt Show ──
-function showReceipt(name, type, qty, price, total, date, ref) {
+function showReceipt(serial, name, type, qty,
+                     price, total, date, ref) {
   const formatted = new Date(date).toLocaleString('en-PK', {
     dateStyle: 'medium', timeStyle: 'short'
   });
@@ -145,6 +154,11 @@ function showReceipt(name, type, qty, price, total, date, ref) {
 
   document.getElementById('receiptBody').innerHTML = `
     <div class="receipt-row">
+      <span class="r-label">Serial No.</span>
+      <span class="r-value" style="color:#1565C0;
+        font-weight:700;">${serial}</span>
+    </div>
+    <div class="receipt-row">
       <span class="r-label">Customer</span>
       <span class="r-value">${name}</span>
     </div>
@@ -154,13 +168,19 @@ function showReceipt(name, type, qty, price, total, date, ref) {
     </div>
     <div class="receipt-row">
       <span class="r-label">Ice Blocks</span>
-      <span class="r-value">${qty} blocks</span>
+      <span class="r-value" style="font-size:20px;
+        font-weight:700; color:#1565C0;">
+        ${qty} blocks
+      </span>
     </div>
     <div class="receipt-row">
       <span class="r-label">Price / Block</span>
-      <span class="r-value">PKR ${price.toLocaleString()}</span>
+      <span class="r-value">
+        PKR ${price.toLocaleString()}
+      </span>
     </div>
-    ${ref ? `<div class="receipt-row">
+    ${ref ? `
+    <div class="receipt-row">
       <span class="r-label">Reference</span>
       <span class="r-value">${ref}</span>
     </div>` : ''}
@@ -169,6 +189,7 @@ function showReceipt(name, type, qty, price, total, date, ref) {
       <span>PKR ${total.toLocaleString()}</span>
     </div>
   `;
+
   document.getElementById('receiptModal')
     .classList.remove('hidden');
 }
@@ -183,7 +204,7 @@ function closeReceipt() {
 // ── Reset Form ──
 function resetForm() {
   document.getElementById('qty').value = '';
-  document.getElementById('price').value = DEFAULT_PRICE;
+  document.getElementById('price').value = '';
   document.getElementById('price').disabled = true;
   document.getElementById('editPrice').checked = false;
   document.getElementById('reference').value = '';

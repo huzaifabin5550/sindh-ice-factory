@@ -6,6 +6,40 @@
   <title>Sindh Ice Factory — POS</title>
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
+<script>
+function printReceipt() {
+  const receiptContent = document.getElementById('receiptBody').innerHTML;
+  const receiptDate = document.getElementById('receiptDate').textContent;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>Receipt — Sindh Ice Factory</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: 0 auto; }
+        .receipt-company { font-size: 22px; font-weight: bold; color: #1565C0; text-align: center; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .receipt-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #1565C0; padding-top: 10px; }
+        .r-label { color: #777; }
+        .r-value { font-weight: 600; }
+        .badge-blue { background: #E3F2FD; color: #1565C0; padding: 2px 8px; border-radius: 4px; }
+        .badge-green { background: #E8F5E9; color: #2E7D32; padding: 2px 8px; border-radius: 4px; }
+        .footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 16px; border-top: 1px dashed #ccc; padding-top: 10px; }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-company">🧊 Sindh Ice Factory</div>
+      <p style="text-align:center; color:#888; font-size:12px; margin:4px 0;">${receiptDate}</p>
+      <hr style="border:1px dashed #ccc; margin: 10px 0;">
+      ${receiptContent}
+      <div class="footer">Shukriya! Dobara tashreef lain. 🙏</div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
+}
+</script>
 <body>
 
 <nav class="navbar">
@@ -116,9 +150,9 @@
   </div>
 
   <div class="grid-2">
-    <button class="btn btn-primary" onclick="submitPOS()">
-      ✅ Submit & Receipt
-    </button>
+     <button class="btn btn-primary" onclick="printReceipt()">
+  🖨️ Print
+</button>
     <button class="btn btn-secondary" onclick="resetForm()"
       style="width:100%;">
       🔄 Reset
