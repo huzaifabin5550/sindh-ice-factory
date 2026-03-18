@@ -11,15 +11,15 @@ window.onload = async function () {
 };
 
 // ── Aaj Ki Date Set ──
-function setToday() {
+ function setToday() {
   const now = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const offset = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - offset * 60000);
+  const today = local.toISOString().split('T')[0];
   document.getElementById('filterDate').value = today;
   selectedDate = today;
   loadReport();
 }
-
 // ── Report Load ──
 async function loadReport() {
   selectedDate = document.getElementById('filterDate').value;
