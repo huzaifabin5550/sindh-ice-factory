@@ -10,14 +10,16 @@
 
 <nav class="navbar">
   <div class="navbar-brand">
-    🧊 Sindh Ice Factory
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
   </div>
-   <div class="navbar-links">
+  <div class="navbar-links">
     <a href="/">POS</a>
     <a href="/dealers" class="active">Dealers</a>
     <a href="/reports">Reports</a>
     <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
-</div>
+  </div>
 </nav>
 
 <div class="container">
@@ -60,10 +62,14 @@
 
 </div>
 
-<!-- Add Dealer Modal -->
+<!-- Add/Edit Dealer Modal -->
 <div class="modal-overlay hidden" id="addDealerModal">
   <div class="modal-box">
-    <div class="modal-title">➕ Naya Dealer Add Karein</div>
+    <div class="modal-title" id="modalTitle">
+      ➕ Naya Dealer Add Karein
+    </div>
+
+    <input type="hidden" id="editDealerId" value="" />
 
     <div class="field-group">
       <label class="field-label">Dealer Name *</label>
