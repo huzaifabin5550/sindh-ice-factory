@@ -435,3 +435,183 @@ input:focus, select:focus {
   .navbar-links a { margin-left: 10px; font-size: 13px; }
   .total-box .amount { font-size: 24px; }
 }
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .navbar-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .navbar-links a {
+    margin-left: 0;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  /* Container */
+  .container {
+    padding: 0 10px;
+    margin: 12px auto;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-card .s-value {
+    font-size: 18px;
+  }
+
+  /* Grid 2 */
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Total Box */
+  .total-box .amount {
+    font-size: 22px;
+  }
+
+  /* Dealer Item */
+  .dealer-item {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .dealer-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .dealer-info {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .dealer-name {
+    font-size: 14px;
+  }
+
+  .balance-amount {
+    font-size: 13px;
+  }
+
+  /* Transaction Table */
+  .txn-table {
+    font-size: 12px;
+  }
+
+  .txn-table th,
+  .txn-table td {
+    padding: 8px 6px;
+  }
+
+  /* Modal */
+  .modal-box {
+    padding: 16px;
+    margin: 10px;
+  }
+
+  .receipt-box {
+    padding: 16px;
+    margin: 10px;
+  }
+
+  /* Buttons */
+  .btn {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .btn-primary {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  /* Toggle Buttons */
+  .toggle-btn {
+    font-size: 13px;
+    padding: 8px 6px;
+  }
+
+  /* Cards */
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  /* Page Headers */
+  h2 {
+    font-size: 17px !important;
+  }
+
+  /* Receipt Search */
+  #searchSerial {
+    font-size: 14px;
+  }
+
+  /* Monthly Summary Table */
+  .txn-table th:nth-child(4),
+  .txn-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* Extra small screens */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar-brand {
+    font-size: 15px;
+  }
+
+  .total-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .total-box .amount {
+    font-size: 26px;
+  }
+
+  /* Hide less important table columns */
+  .txn-table th:nth-child(5),
+  .txn-table td:nth-child(5) {
+    display: none;
+  }
+
+  .dealer-item {
+    flex-direction: column;
+  }
+
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-box {
+    max-width: 100%;
+  }
+
+  .receipt-box {
+    max-width: 100%;
+  }
+}
+ 
