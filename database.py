@@ -1,8 +1,4 @@
- # ========================================
-# SINDH ICE FACTORY - Database Setup
-# ========================================
-
-import sqlite3
+ import sqlite3
 import hashlib
 import os
 
@@ -16,8 +12,6 @@ def get_db():
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
-
-    # Users Table (Login)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,15 +19,11 @@ def init_db():
             password TEXT NOT NULL
         )
     ''')
-
-    # Default admin user (password: admin123)
     default_pass = hashlib.sha256('admin123'.encode()).hexdigest()
     cursor.execute('''
         INSERT OR IGNORE INTO users (username, password)
         VALUES (?, ?)
     ''', ('admin', default_pass))
-
-    # Dealers Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS dealers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,8 +36,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-
-    # Transactions Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,13 +51,11 @@ def init_db():
             FOREIGN KEY (dealer_id) REFERENCES dealers(id)
         )
     ''')
-
     conn.commit()
     conn.close()
     print("✅ Database ready!")
 
-# ── Serial Number Generator ──
- def generate_serial():
+def generate_serial():
     conn = get_db()
     last = conn.execute(
         'SELECT serial_number FROM transactions WHERE serial_number LIKE "REC-%" ORDER BY id DESC LIMIT 1'
@@ -78,12 +64,11 @@ def init_db():
     if last:
         try:
             num = int(last['serial_number'].split('-')[1])
-            return f"REC-{str(num + 1).zfill(4)}"
+            return "REC-" + str(num + 1).zfill(4)
         except:
             pass
     return "REC-0001"
 
-# ── User Functions ──
 def verify_user(username, password):
     conn = get_db()
     hashed = hashlib.sha256(password.encode()).hexdigest()
@@ -94,7 +79,6 @@ def verify_user(username, password):
     conn.close()
     return dict(user) if user else None
 
-# ── Dealer Functions ──
 def get_all_dealers():
     conn = get_db()
     dealers = conn.execute(
@@ -113,62 +97,55 @@ def get_dealer(id):
 
 def add_dealer(name, phone, cnic, location, address):
     conn = get_db()
-    conn.execute('''
-        INSERT INTO dealers (name, phone, cnic, location, address)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (name, phone, cnic, location, address))
+    conn.execute(
+        'INSERT INTO dealers (name, phone, cnic, location, address) VALUES (?, ?, ?, ?, ?)',
+        (name, phone, cnic, location, address)
+    )
     conn.commit()
     conn.close()
 
 def update_dealer(id, name, phone, cnic, location, address):
     conn = get_db()
-    conn.execute('''
-        UPDATE dealers
-        SET name=?, phone=?, cnic=?, location=?, address=?
-        WHERE id=?
-    ''', (name, phone, cnic, location, address, id))
+    conn.execute(
+        'UPDATE dealers SET name=?, phone=?, cnic=?, location=?, address=? WHERE id=?',
+        (name, phone, cnic, location, address, id)
+    )
     conn.commit()
     conn.close()
 
 def delete_dealer(id):
     conn = get_db()
     conn.execute(
-        'UPDATE transactions SET dealer_id=NULL WHERE dealer_id=?',
-        (id,)
+        'UPDATE transactions SET dealer_id=NULL WHERE dealer_id=?', (id,)
     )
     conn.execute('DELETE FROM dealers WHERE id=?', (id,))
     conn.commit()
     conn.close()
 
- def update_dealer_balance(dealer_id, type, amount):
+def update_dealer_balance(dealer_id, type, amount):
     conn = get_db()
     dealer_id = int(dealer_id)
+    amount = float(amount)
     if type == 'Credit':
-        conn.execute('''
-            UPDATE dealers SET balance = balance + ?
-            WHERE id = ?
-        ''', (float(amount), dealer_id))
+        conn.execute(
+            'UPDATE dealers SET balance = balance + ? WHERE id = ?',
+            (amount, dealer_id)
+        )
     elif type == 'Payment':
-        conn.execute('''
-            UPDATE dealers SET balance = balance - ?
-            WHERE id = ?
-        ''', (float(amount), dealer_id))
+        conn.execute(
+            'UPDATE dealers SET balance = balance - ? WHERE id = ?',
+            (amount, dealer_id)
+        )
     conn.commit()
     conn.close()
 
-# ── Transaction Functions ──
-def add_transaction(dealer_id, dealer_name,
-                    type, qty, price, total,
-                    reference, date):
+def add_transaction(dealer_id, dealer_name, type, qty, price, total, reference, date):
     serial = generate_serial()
     conn = get_db()
-    conn.execute('''
-        INSERT INTO transactions
-        (serial_number, dealer_id, dealer_name, type,
-         qty, price, total, reference, date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (serial, dealer_id, dealer_name, type,
-          qty, price, total, reference, date))
+    conn.execute(
+        'INSERT INTO transactions (serial_number, dealer_id, dealer_name, type, qty, price, total, reference, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        (serial, dealer_id, dealer_name, type, qty, price, total, reference, date)
+    )
     conn.commit()
     conn.close()
     if dealer_id and type in ['Credit', 'Payment']:
@@ -177,9 +154,9 @@ def add_transaction(dealer_id, dealer_name,
 
 def get_all_transactions():
     conn = get_db()
-    txns = conn.execute('''
-        SELECT * FROM transactions ORDER BY date DESC
-    ''').fetchall()
+    txns = conn.execute(
+        'SELECT * FROM transactions ORDER BY date DESC'
+    ).fetchall()
     conn.close()
     return [dict(t) for t in txns]
 
@@ -194,8 +171,7 @@ def get_transaction(id):
 def get_transaction_by_serial(serial):
     conn = get_db()
     txn = conn.execute(
-        'SELECT * FROM transactions WHERE serial_number=?',
-        (serial,)
+        'SELECT * FROM transactions WHERE serial_number=?', (serial,)
     ).fetchone()
     conn.close()
     return dict(txn) if txn else None
@@ -206,15 +182,14 @@ def update_transaction(id, qty, price, total, reference):
         'SELECT * FROM transactions WHERE id=?', (id,)
     ).fetchone()
     if old and old['dealer_id'] and old['type'] == 'Credit':
-        conn.execute('''
-            UPDATE dealers SET balance = balance - ? + ?
-            WHERE id = ?
-        ''', (old['total'], total, old['dealer_id']))
-    conn.execute('''
-        UPDATE transactions
-        SET qty=?, price=?, total=?, reference=?
-        WHERE id=?
-    ''', (qty, price, total, reference, id))
+        conn.execute(
+            'UPDATE dealers SET balance = balance - ? + ? WHERE id = ?',
+            (old['total'], total, old['dealer_id'])
+        )
+    conn.execute(
+        'UPDATE transactions SET qty=?, price=?, total=?, reference=? WHERE id=?',
+        (qty, price, total, reference, id)
+    )
     conn.commit()
     conn.close()
 
@@ -225,35 +200,34 @@ def delete_transaction(id):
     ).fetchone()
     if txn and txn['dealer_id']:
         if txn['type'] == 'Credit':
-            conn.execute('''
-                UPDATE dealers SET balance = balance - ?
-                WHERE id = ?
-            ''', (txn['total'], txn['dealer_id']))
+            conn.execute(
+                'UPDATE dealers SET balance = balance - ? WHERE id = ?',
+                (txn['total'], txn['dealer_id'])
+            )
         elif txn['type'] == 'Payment':
-            conn.execute('''
-                UPDATE dealers SET balance = balance + ?
-                WHERE id = ?
-            ''', (txn['total'], txn['dealer_id']))
+            conn.execute(
+                'UPDATE dealers SET balance = balance + ? WHERE id = ?',
+                (txn['total'], txn['dealer_id'])
+            )
     conn.execute('DELETE FROM transactions WHERE id=?', (id,))
     conn.commit()
     conn.close()
 
 def get_dealer_transactions(dealer_id):
     conn = get_db()
-    txns = conn.execute('''
-        SELECT * FROM transactions
-        WHERE dealer_id = ? ORDER BY date DESC
-    ''', (dealer_id,)).fetchall()
+    txns = conn.execute(
+        'SELECT * FROM transactions WHERE dealer_id = ? ORDER BY date DESC',
+        (dealer_id,)
+    ).fetchall()
     conn.close()
     return [dict(t) for t in txns]
 
 def get_transactions_by_date(date):
     conn = get_db()
-    txns = conn.execute('''
-        SELECT * FROM transactions
-        WHERE DATE(date) = DATE(?)
-        ORDER BY date DESC
-    ''', (date,)).fetchall()
+    txns = conn.execute(
+        'SELECT * FROM transactions WHERE DATE(date) = DATE(?) ORDER BY date DESC',
+        (date,)
+    ).fetchall()
     conn.close()
     return [dict(t) for t in txns]
 
@@ -272,3 +246,4 @@ def get_monthly_summary():
     ''').fetchall()
     conn.close()
     return [dict(s) for s in summary]
+ 
