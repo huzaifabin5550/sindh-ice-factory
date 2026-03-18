@@ -30,7 +30,6 @@ window.onload = async function () {
 // ── Dealer Info ──
 function renderDealerInfo() {
   const d = currentDealer;
-
   const initials = d.name.split(' ')
     .map(w => w[0]).join('').toUpperCase().slice(0, 2);
   document.getElementById('dealerAvatar').textContent = initials;
@@ -64,7 +63,6 @@ async function renderStats() {
     .filter(t => t.type === 'Payment')
     .reduce((sum, t) => sum + (t.total || 0), 0);
 
-  // Fresh dealer data lo balance ke liye
   const freshDealer = await DB.getDealer(currentDealer.id);
   const balance = freshDealer.balance || 0;
 
@@ -99,11 +97,12 @@ async function renderHistory() {
     <table class="txn-table">
       <thead>
         <tr>
+          <th>Serial #</th>
           <th>Date</th>
           <th>Type</th>
           <th>Qty</th>
           <th>Amount</th>
-          <th>Reference</th>
+          <th>Ref</th>
         </tr>
       </thead>
       <tbody>
@@ -139,6 +138,9 @@ async function renderHistory() {
 
           return `
             <tr>
+              <td style="font-weight:700; color:#1565C0;">
+                ${t.serial_number || '—'}
+              </td>
               <td>
                 ${date}<br>
                 <span style="font-size:11px; color:#aaa;">
@@ -205,7 +207,8 @@ async function submitPayment() {
     return;
   }
 
-  await DB.addTransaction({
+  // Payment save karo
+  const result = await DB.addTransaction({
     dealerId: currentDealer.id,
     dealerName: currentDealer.name,
     type: 'Payment',
@@ -217,18 +220,91 @@ async function submitPayment() {
   });
 
   closePayDebt();
+
+  // Reload data
+  currentDealer = await DB.getDealer(currentDealer.id);
   await renderStats();
   await renderHistory();
 
-  alert('✅ Payment save ho gayi! PKR ' +
-    amount.toLocaleString());
+  // Payment receipt dikhao
+  showPaymentReceipt(
+    result.serial || '—',
+    currentDealer.name,
+    amount,
+    reference || 'Payment'
+  );
+}
+
+// ── Payment Receipt ──
+function showPaymentReceipt(serial, name, amount, reference) {
+  const now = new Date().toLocaleString('en-PK', {
+    dateStyle: 'medium', timeStyle: 'short'
+  });
+
+  const receiptHTML = `
+    <div style="font-family:Arial; max-width:400px; margin:0 auto; padding:20px;">
+      <div style="text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:12px;">
+        <div style="font-size:22px; font-weight:bold; color:#1565C0;">🧊 Sindh Ice Factory</div>
+        <div style="font-size:12px; color:#888;">Payment Receipt</div>
+        <div style="font-size:12px; color:#aaa;">${now}</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Serial No.</span>
+        <span style="font-weight:700; color:#1565C0;">${serial}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Dealer</span>
+        <span style="font-weight:600;">${name}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Type</span>
+        <span style="background:#FFF8E1; color:#E65100; padding:2px 8px; border-radius:4px; font-size:12px;">Payment</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
+        <span style="color:#777;">Reference</span>
+        <span style="font-weight:600;">${reference}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:10px 0 0; font-size:18px; font-weight:bold; color:#2E7D32;">
+        <span>Amount Paid</span>
+        <span>PKR ${amount.toLocaleString()}</span>
+      </div>
+      <div style="text-align:center; color:#aaa; font-size:12px; margin-top:16px; border-top:1px dashed #ccc; padding-top:10px;">
+        Shukriya! Dobara tashreef lain. 🙏
+      </div>
+    </div>
+  `;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+    <head><title>Payment Receipt</title></head>
+    <body>
+      ${receiptHTML}
+      <div style="text-align:center; margin-top:20px;">
+        <button onclick="window.print()"
+          style="background:#1565C0; color:white; border:none;
+          padding:10px 24px; border-radius:8px; font-size:15px;
+          cursor:pointer;">
+          🖨️ Print Karein
+        </button>
+        <button onclick="window.close()"
+          style="background:#eee; color:#333; border:none;
+          padding:10px 24px; border-radius:8px; font-size:15px;
+          cursor:pointer; margin-left:10px;">
+          ✖ Band Karein
+        </button>
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 // ── Delete Dealer ──
 async function deleteDealer() {
   if (!confirm('⚠️ Kya aap sure hain? ' +
     currentDealer.name + ' delete ho jayega!')) return;
-
   await DB.deleteDealer(currentDealer.id);
   window.location.href = '/dealers';
 }
+ 
