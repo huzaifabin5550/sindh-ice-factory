@@ -244,6 +244,11 @@ async function searchReceipt() {
             onclick="printSearchReceipt(${JSON.stringify(txn).replace(/"/g, '&quot;')})">
             🖨️ Print
           </button>
+          <button class="btn btn-secondary"
+            style="width:auto; padding:8px 14px; font-size:13px;"
+            onclick="openEditReceipt(${txn.id})">
+            ✏️ Edit
+          </button>
           <button class="btn btn-danger"
             style="width:auto; padding:8px 14px; font-size:13px;"
             onclick="deleteSearchReceipt(${txn.id}, '${txn.serial_number}')">
@@ -316,5 +321,91 @@ async function deleteSearchReceipt(id, serial) {
       ✅ Receipt delete ho gayi!
     </div>`;
   document.getElementById('searchSerial').value = '';
+}
+ // ── Edit Receipt ──
+async function openEditReceipt(id) {
+  const txn = await DB.getTransaction(id);
+  if (!txn || txn.error) {
+    alert('❌ Receipt nahi mili!');
+    return;
+  }
+
+  const container = document.getElementById('searchResult');
+  container.innerHTML += `
+    <div style="background:white; border:1px solid #E3EAF3;
+      border-radius:10px; padding:14px; margin-top:12px;">
+      <div style="font-size:15px; font-weight:600;
+        margin-bottom:12px; color:#1565C0;">
+        ✏️ Receipt Edit Karein — ${txn.serial_number}
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="field-group">
+          <label class="field-label">Quantity (Blocks)</label>
+          <input type="number" id="editQty"
+            value="${txn.qty || 0}" min="0" oninput="calcEditTotal()" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Price per Block (PKR)</label>
+          <input type="number" id="editPrice"
+            value="${txn.price || 0}" min="0" oninput="calcEditTotal()" />
+        </div>
+      </div>
+      <div class="field-group" style="margin-top:8px;">
+        <label class="field-label">Reference</label>
+        <input type="text" id="editReference"
+          value="${txn.reference || ''}"
+          placeholder="e.g. Truck #4" />
+      </div>
+      <div class="total-box" style="margin:12px 0;">
+        <span class="label">Total Amount</span>
+        <span class="amount" id="editTotal">
+          PKR ${(txn.total || 0).toLocaleString()}
+        </span>
+      </div>
+      <div class="grid-2" style="gap:8px;">
+        <button class="btn btn-primary"
+          onclick="saveEditReceipt(${id})">
+          ✅ Save Karein
+        </button>
+        <button class="btn btn-secondary"
+          onclick="searchReceipt()"
+          style="width:100%;">
+          ✖ Cancel
+        </button>
+      </div>
+    </div>`;
+}
+
+function calcEditTotal() {
+  const qty = parseFloat(document.getElementById('editQty').value) || 0;
+  const price = parseFloat(document.getElementById('editPrice').value) || 0;
+  document.getElementById('editTotal').textContent =
+    'PKR ' + (qty * price).toLocaleString();
+}
+
+async function saveEditReceipt(id) {
+  const qty = parseFloat(document.getElementById('editQty').value) || 0;
+  const price = parseFloat(document.getElementById('editPrice').value) || 0;
+  const reference = document.getElementById('editReference').value;
+  const total = qty * price;
+
+  if (qty <= 0 || price <= 0) {
+    alert('❌ Quantity aur Price dalein!');
+    return;
+  }
+
+  const result = await DB.updateTransaction(id, {
+    qty, price, total, reference
+  });
+
+  if (result.error) {
+    alert('❌ ' + result.error);
+    return;
+  }
+
+  alert('✅ Receipt update ho gayi!');
+  document.getElementById('searchSerial').value = '';
+  document.getElementById('searchResult').innerHTML = '';
+  await loadReport();
 }
  
