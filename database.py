@@ -71,12 +71,9 @@ def init_db():
 # ── Serial Number Generator ──
  def generate_serial():
     conn = get_db()
-    # Max serial number se next generate karo
-    last = conn.execute('''
-        SELECT serial_number FROM transactions
-        WHERE serial_number LIKE "REC-%"
-        ORDER BY id DESC LIMIT 1
-    ''').fetchone()
+    last = conn.execute(
+        'SELECT serial_number FROM transactions WHERE serial_number LIKE "REC-%" ORDER BY id DESC LIMIT 1'
+    ).fetchone()
     conn.close()
     if last:
         try:
