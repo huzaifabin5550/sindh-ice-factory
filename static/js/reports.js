@@ -25,7 +25,8 @@ async function loadReport() {
   selectedDate = document.getElementById('filterDate').value;
   if (!selectedDate) return;
 
-  const txns = await DB.getTransactionsByDate(selectedDate);
+ const txns = await DB.getTransactionsByDate(selectedDate);
+console.log('Transactions loaded:', txns.length, txns); 
 
   // Stats calculate
   const cashSales = txns
