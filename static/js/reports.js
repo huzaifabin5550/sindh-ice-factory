@@ -22,6 +22,9 @@ async function loadReport() {
   const txns = await DB.getTransactionsByDate(selectedDate);
   const exps = await fetch('/api/expenditures/date/' + selectedDate).then(r => r.json());
   const totalExp = exps.reduce((sum, e) => sum + (e.amount || 0), 0);
+  const totalPayments = txns
+    .filter(t => t.type === 'Payment')
+    .reduce((sum, t) => sum + (t.total || 0), 0);
 
   const cashSales = txns
     .filter(t => t.type === 'Cash')
@@ -44,8 +47,13 @@ async function loadReport() {
   const netTotal = cashSales + creditSales - totalExp;
   document.getElementById('statTotal').textContent =
     'PKR ' + netTotal.toLocaleString();
+  document.getElementById('statPayments').textContent =
+    'PKR ' + totalPayments.toLocaleString();
+  const netBalance = cashSales + totalPayments - totalExp;
+  document.getElementById('statNet').textContent =
+    'PKR ' + netBalance.toLocaleString();
 
-  renderTable(txns);
+renderTable(txns);
 }
 
 function setFilter(filter) {
