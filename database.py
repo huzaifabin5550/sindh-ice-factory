@@ -1,4 +1,4 @@
- import sqlite3
+import sqlite3
 import hashlib
 import os
 DB_PATH = os.path.join(os.path.dirname(__file__), 'sindh_ice.db')
