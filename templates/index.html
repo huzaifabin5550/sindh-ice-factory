@@ -152,73 +152,64 @@
 <script src="/static/js/pos.js"></script>
 <script>
 function printReceipt() {
-  const receiptContent = document.getElementById('receiptBody').innerHTML;
-  const receiptDate = document.getElementById('receiptDate').textContent;
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <html>
-    <head>
-      <title>Receipt — Sindh Ice Factory</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: 0 auto; }
-        .receipt-company { font-size: 22px; font-weight: bold; color: #1565C0; text-align: center; }
-        .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-        .receipt-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #1565C0; padding-top: 10px; }
-        .r-label { color: #777; }
-        .r-value { font-weight: 600; }
-        .badge-blue { background: #E3F2FD; color: #1565C0; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-        .badge-green { background: #E8F5E9; color: #2E7D32; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-        .footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 16px; border-top: 1px dashed #ccc; padding-top: 10px; }
-      </style>
-    </head>
-    <script>
-// ── Particles ──
+  var content = document.getElementById('receiptBody').innerHTML;
+  var date = document.getElementById('receiptDate').textContent;
+  var w = window.open('', '_blank');
+  var html = '<!DOCTYPE html><html><head><title>Receipt</title><style>';
+  html += 'body{font-family:Arial;padding:20px;max-width:400px;margin:0 auto}';
+  html += '.receipt-company{font-size:22px;font-weight:bold;color:#1565C0;text-align:center}';
+  html += '.receipt-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:14px}';
+  html += '.receipt-total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;color:#1565C0;padding-top:10px}';
+  html += '.r-label{color:#777}.r-value{font-weight:600}';
+  html += '.badge-blue{background:#E3F2FD;color:#1565C0;padding:2px 8px;border-radius:4px;font-size:12px}';
+  html += '.badge-green{background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:4px;font-size:12px}';
+  html += '.badge-orange{background:#FFF8E1;color:#E65100;padding:2px 8px;border-radius:4px;font-size:12px}';
+  html += '.footer{text-align:center;color:#aaa;font-size:12px;margin-top:16px;border-top:1px dashed #ccc;padding-top:10px}';
+  html += '</style></head><body>';
+  html += '<div class="receipt-company">🧊 Sindh Ice Factory</div>';
+  html += '<p style="text-align:center;color:#888;font-size:12px;margin:4px 0">' + date + '</p>';
+  html += '<hr style="border:1px dashed #ccc;margin:10px 0">';
+  html += content;
+  html += '<div class="footer">Shukriya! Dobara tashreef lain.</div>';
+  html += '</body></html>';
+  w.document.write(html);
+  w.document.close();
+  w.print();
+}
+
 function createParticles() {
-  for (let i = 0; i < 8; i++) {
-    const p = document.createElement('div');
+  for (var i = 0; i < 8; i++) {
+    var p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * 100 + 'vw';
     p.style.animationDuration = (Math.random() * 15 + 10) + 's';
     p.style.animationDelay = (Math.random() * 10) + 's';
-    p.style.width = p.style.height = (Math.random() * 4 + 2) + 'px';
+    var size = (Math.random() * 4 + 2) + 'px';
+    p.style.width = size;
+    p.style.height = size;
     p.style.opacity = Math.random() * 0.4 + 0.1;
     document.body.appendChild(p);
   }
 }
 
-// ── Ripple Effect ──
-document.querySelectorAll('.btn-primary').forEach(btn => {
-  btn.addEventListener('click', function(e) {
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple';
-    const rect = this.getBoundingClientRect();
-    ripple.style.width = ripple.style.height =
-      Math.max(rect.width, rect.height) + 'px';
-    ripple.style.left = e.clientX - rect.left -
-      parseInt(ripple.style.width)/2 + 'px';
-    ripple.style.top = e.clientY - rect.top -
-      parseInt(ripple.style.height)/2 + 'px';
-    this.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.btn-primary').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      var ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      var rect = this.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      ripple.style.width = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+      ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+      this.appendChild(ripple);
+      var r = ripple;
+      setTimeout(function() { r.remove(); }, 600);
+    });
   });
+  createParticles();
 });
-
-createParticles();
-</script>
- 
-
-    <body>
-      <div class="receipt-company">🧊 Sindh Ice Factory</div>
-      <p style="text-align:center; color:#888; font-size:12px; margin:4px 0;">${receiptDate}</p>
-      <hr style="border:1px dashed #ccc; margin: 10px 0;">
-      ${receiptContent}
-      <div class="footer">Shukriya! Dobara tashreef lain.</div>
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.print();
-}
 </script>
 </body>
 </html>
