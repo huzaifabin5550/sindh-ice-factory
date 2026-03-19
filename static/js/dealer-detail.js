@@ -1,4 +1,5 @@
  let currentDealer = null;
+let allTransactions = [];
 
 window.onload = async function () {
   const params = new URLSearchParams(window.location.search);
@@ -46,8 +47,13 @@ async function renderStats() {
   balEl.className = balance > 0 ? 's-value text-red' : 's-value text-green';
 }
 
-async function renderHistory() {
+ async function renderHistory() {
   const txns = await DB.getDealerTransactions(currentDealer.id);
+  allTransactions = txns;
+  renderHistoryData(txns);
+}
+
+function renderHistoryData(txns) {
   const container = document.getElementById('txnHistory');
   if (txns.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding:2rem; color:#aaa;"><p>Abhi koi transaction nahi hai</p></div>';
@@ -176,3 +182,21 @@ async function deleteDealer() {
   await DB.deleteDealer(currentDealer.id);
   window.location.href = '/dealers';
 }
+// ── Date Filter ──
+function filterHistory() {
+  const date = document.getElementById('historyDate').value;
+  if (!date) {
+    renderHistoryData(allTransactions);
+    return;
+  }
+  const filtered = allTransactions.filter(t =>
+    t.date && t.date.startsWith(date)
+  );
+  renderHistoryData(filtered);
+}
+
+function clearFilter() {
+  document.getElementById('historyDate').value = '';
+  renderHistoryData(allTransactions);
+}
+ 
