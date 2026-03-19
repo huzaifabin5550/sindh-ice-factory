@@ -7,6 +7,16 @@ from database import *
 from functools import wraps
 
 app = Flask(__name__)
+@app.after_request
+def add_security_headers(response):
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:;"
+    )
+    return response
+ 
 app.secret_key = 'sindh_ice_factory_secret_2024'
 
 # Database initialize karo
