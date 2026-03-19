@@ -96,9 +96,27 @@
 
   <div class="field-group">
     <label class="field-label">Password</label>
-    <input type="password" id="password"
-      placeholder="Password dalein"
-      onkeypress="handleEnter(event)" />
+    <div style="position:relative;">
+      <input type="password" id="password"
+        placeholder="Password dalein"
+        onkeypress="handleEnter(event)"
+        style="width:100%; padding-right:45px;" />
+      <button onclick="togglePassword()"
+        style="position:absolute; right:10px; top:50%;
+        transform:translateY(-50%); background:none;
+        border:none; cursor:pointer; font-size:18px;"
+        type="button" id="eyeBtn">👁</button>
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:center;
+    gap:8px; margin-bottom:8px;">
+    <input type="checkbox" id="rememberMe"
+      onchange="handleRemember()" />
+    <label for="rememberMe"
+      style="font-size:13px; color:#555; cursor:pointer;">
+      Mujhe yaad rakho (Remember Me)
+    </label>
   </div>
 
   <button class="btn-login" onclick="doLogin()">
@@ -125,7 +143,16 @@
 
       const data = await res.json();
 
-      if (data.success) {
+       if (data.success) {
+        // Remember Me save karo
+        if (document.getElementById('rememberMe').checked) {
+          localStorage.setItem('sif_remember', 'true');
+          localStorage.setItem('sif_username',
+            document.getElementById('username').value);
+        } else {
+          localStorage.removeItem('sif_remember');
+          localStorage.removeItem('sif_username');
+        }
         window.location.href = '/';
       } else {
         showError(data.error || 'Galat username ya password!');
@@ -143,6 +170,39 @@
 
   function handleEnter(e) {
     if (e.key === 'Enter') doLogin();
+  }
+// ── Show/Hide Password ──
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const btn = document.getElementById('eyeBtn');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁';
+    }
+  }
+
+  // ── Remember Me ──
+  function handleRemember() {
+    const cb = document.getElementById('rememberMe');
+    if (cb.checked) {
+      localStorage.setItem('sif_remember', 'true');
+    } else {
+      localStorage.removeItem('sif_remember');
+      localStorage.removeItem('sif_username');
+    }
+  }
+
+  // ── Page Load — Check Remember Me ──
+  window.onload = function() {
+    const remember = localStorage.getItem('sif_remember');
+    const username = localStorage.getItem('sif_username');
+    if (remember && username) {
+      document.getElementById('username').value = username;
+      document.getElementById('rememberMe').checked = true;
+    }
   }
 </script>
 
