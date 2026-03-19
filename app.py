@@ -1,12 +1,20 @@
- # ========================================
-# SINDH ICE FACTORY - Flask Server
-# ========================================
-
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+ from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from database import *
 from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'sindh_ice_factory_secret_2024'
+
+init_db()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.after_request
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = (
@@ -16,33 +24,13 @@ def add_security_headers(response):
         "img-src 'self' data:;"
     )
     return response
- 
-app.secret_key = 'sindh_ice_factory_secret_2024'
 
-# Database initialize karo
-init_db()
-
-# ── Login Required Decorator ──
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# ========================================
-# AUTH ROUTES
-# ========================================
-
+# ── Auth ──
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         data = request.json
-        user = verify_user(
-            data.get('username'),
-            data.get('password')
-        )
+        user = verify_user(data.get('username'), data.get('password'))
         if user:
             session['user'] = user['username']
             return jsonify({'success': True})
@@ -54,10 +42,7 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
-# ========================================
-# PAGE ROUTES
-# ========================================
-
+# ── Pages ──
 @app.route('/')
 @login_required
 def index():
@@ -78,10 +63,28 @@ def dealer_detail():
 def reports():
     return render_template('reports.html')
 
-# ========================================
-# DEALER APIs
-# ========================================
+@app.route('/expenditures')
+@login_required
+def expenditures():
+    return render_template('expenditures.html')
 
+@app.route('/reset', methods=['GET', 'POST'])
+@login_required
+def reset_data():
+    if request.method == 'POST':
+        data = request.json
+        if data.get('password') != 'RESET@SIF2024':
+            return jsonify({'error': 'Galat password!'}), 401
+        conn = get_db()
+        conn.execute('DELETE FROM transactions')
+        conn.execute('DELETE FROM expenditures')
+        conn.execute('UPDATE dealers SET balance = 0')
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Sab data delete ho gaya!'})
+    return render_template('reset.html')
+
+# ── Dealer APIs ──
 @app.route('/api/dealers', methods=['GET'])
 @login_required
 def api_get_dealers():
@@ -105,13 +108,7 @@ def api_add_dealer():
     all_dealers = get_all_dealers()
     if any(d['name'].lower() == name.lower() for d in all_dealers):
         return jsonify({'error': 'Dealer pehle se exist karta hai'}), 400
-    add_dealer(
-        name=name,
-        phone=data.get('phone', ''),
-        cnic=data.get('cnic', ''),
-        location=data.get('location', 'Remote'),
-        address=data.get('address', '')
-    )
+    add_dealer(name=name, phone=data.get('phone', ''), cnic=data.get('cnic', ''), location=data.get('location', 'Remote'), address=data.get('address', ''))
     return jsonify({'success': True, 'message': 'Dealer add ho gaya!'})
 
 @app.route('/api/dealers/<int:id>', methods=['PUT'])
@@ -121,14 +118,7 @@ def api_update_dealer(id):
     name = data.get('name', '').strip()
     if not name:
         return jsonify({'error': 'Naam zaroori hai'}), 400
-    update_dealer(
-        id=id,
-        name=name,
-        phone=data.get('phone', ''),
-        cnic=data.get('cnic', ''),
-        location=data.get('location', 'Remote'),
-        address=data.get('address', '')
-    )
+    update_dealer(id=id, name=name, phone=data.get('phone', ''), cnic=data.get('cnic', ''), location=data.get('location', 'Remote'), address=data.get('address', ''))
     return jsonify({'success': True, 'message': 'Dealer update ho gaya!'})
 
 @app.route('/api/dealers/<int:id>', methods=['DELETE'])
@@ -137,10 +127,7 @@ def api_delete_dealer(id):
     delete_dealer(id)
     return jsonify({'success': True, 'message': 'Dealer delete ho gaya!'})
 
-# ========================================
-# TRANSACTION APIs
-# ========================================
-
+# ── Transaction APIs ──
 @app.route('/api/transactions', methods=['POST'])
 @login_required
 def api_add_transaction():
@@ -185,13 +172,7 @@ def api_update_transaction(id):
     qty = float(data.get('qty', 0))
     price = float(data.get('price', 0))
     total = qty * price
-    update_transaction(
-        id=id,
-        qty=qty,
-        price=price,
-        total=total,
-        reference=data.get('reference', '')
-    )
+    update_transaction(id=id, qty=qty, price=price, total=total, reference=data.get('reference', ''))
     return jsonify({'success': True, 'message': 'Transaction update ho gayi!'})
 
 @app.route('/api/transactions/<int:id>', methods=['DELETE'])
@@ -215,25 +196,39 @@ def api_get_date_transactions(date):
 def api_monthly_summary():
     return jsonify(get_monthly_summary())
 
-# ========================================
-# RUN SERVER
-# ========================================
-# ── Reset All Data ──
-@app.route('/reset', methods=['GET', 'POST'])
+# ── Expenditure APIs ──
+@app.route('/api/expenditures', methods=['GET'])
 @login_required
-def reset_data():
-    if request.method == 'POST':
-        data = request.json
-        password = data.get('password', '')
-        # Reset password check
-        if password != 'RESET@SIF2024':
-            return jsonify({'error': 'Galat password!'}), 401
-        conn = get_db()
-        conn.execute('DELETE FROM transactions')
-        conn.execute('UPDATE dealers SET balance = 0')
-        conn.commit()
-        conn.close()
-        return jsonify({'success': True, 'message': 'Sab data delete ho gaya!'})
-    return render_template('reset.html')
+def api_get_expenditures():
+    return jsonify(get_all_expenditures())
+
+@app.route('/api/expenditures', methods=['POST'])
+@login_required
+def api_add_expenditure():
+    data = request.json
+    amount = data.get('amount', 0)
+    reason = data.get('reason', '')
+    date = data.get('date', '')
+    if not amount or float(amount) <= 0:
+        return jsonify({'error': 'Amount dalein!'}), 400
+    add_expenditure(amount=amount, reason=reason, date=date)
+    return jsonify({'success': True, 'message': 'Expenditure add ho gayi!'})
+
+@app.route('/api/expenditures/date/<date>', methods=['GET'])
+@login_required
+def api_get_date_expenditures(date):
+    return jsonify(get_expenditures_by_date(date))
+
+@app.route('/api/expenditures/<int:id>', methods=['DELETE'])
+@login_required
+def api_delete_expenditure(id):
+    delete_expenditure(id)
+    return jsonify({'success': True, 'message': 'Expenditure delete ho gayi!'})
+
+@app.route('/api/monthly-expenditures', methods=['GET'])
+@login_required
+def api_monthly_expenditures():
+    return jsonify(get_monthly_expenditures())
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
