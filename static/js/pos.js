@@ -54,17 +54,6 @@ function setTxnType(type) {
     'toggle-btn' + (type === 'Cash' ? ' active-green' : '');
 }
 
-// ── Price Toggle ──
-function togglePrice() {
-  const cb = document.getElementById('editPrice');
-  const priceInput = document.getElementById('price');
-  priceInput.disabled = !cb.checked;
-  if (!cb.checked) {
-    priceInput.value = '';
-    calcTotal();
-  }
-}
-
 // ── Total Calculate ──
 function calcTotal() {
   const qty = parseFloat(
@@ -205,8 +194,6 @@ function closeReceipt() {
 function resetForm() {
   document.getElementById('qty').value = '';
   document.getElementById('price').value = '';
-  document.getElementById('price').disabled = true;
-  document.getElementById('editPrice').checked = false;
   document.getElementById('reference').value = '';
   document.getElementById('walkinName').value = '';
   document.getElementById('dealerSelect').value = '';
