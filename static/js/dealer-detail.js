@@ -47,7 +47,7 @@ async function renderStats() {
   balEl.className = balance > 0 ? 's-value text-red' : 's-value text-green';
 }
 
- async function renderHistory() {
+async function renderHistory() {
   const txns = await DB.getDealerTransactions(currentDealer.id);
   allTransactions = txns;
   renderHistoryData(txns);
@@ -56,7 +56,7 @@ async function renderStats() {
 function renderHistoryData(txns) {
   const container = document.getElementById('txnHistory');
   if (txns.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding:2rem; color:#aaa;"><p>Abhi koi transaction nahi hai</p></div>';
+    container.innerHTML = '<div style="text-align:center; padding:2rem; color:#aaa;"><p>Koi transaction nahi</p></div>';
     return;
   }
   container.innerHTML = `
@@ -115,11 +115,8 @@ async function submitPayment() {
   const balance = freshDealer.balance || 0;
   if (!amount || amount <= 0) { alert('❌ Amount dalein!'); return; }
   if (amount > balance) { alert('❌ Amount baqi se zyada hai! Baqi: PKR ' + balance.toLocaleString()); return; }
-
-  // Pakistan timezone date
   const now = new Date();
   const pkDate = new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString().slice(0, 19);
-
   const result = await DB.addTransaction({
     dealerId: currentDealer.id,
     dealerName: currentDealer.name,
@@ -130,7 +127,6 @@ async function submitPayment() {
     reference: reference || 'Payment',
     date: pkDate
   });
-
   closePayDebt();
   currentDealer = await DB.getDealer(currentDealer.id);
   await renderStats();
@@ -140,41 +136,30 @@ async function submitPayment() {
 
 function showPaymentReceipt(serial, name, amount, reference) {
   const now = new Date().toLocaleString('en-PK', {dateStyle:'medium', timeStyle:'short'});
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <html><head><title>Payment Receipt</title></head>
-    <body style="font-family:Arial; max-width:400px; margin:0 auto; padding:20px;">
-      <div style="text-align:center; border-bottom:1px dashed #ccc; padding-bottom:12px; margin-bottom:12px;">
-        <div style="font-size:22px; font-weight:bold; color:#1565C0;">🧊 Sindh Ice Factory</div>
-        <div style="font-size:12px; color:#888;">Payment Receipt</div>
-        <div style="font-size:12px; color:#aaa;">${now}</div>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-        <span style="color:#777;">Serial No.</span>
-        <span style="font-weight:700; color:#1565C0;">${serial}</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-        <span style="color:#777;">Dealer</span>
-        <span style="font-weight:600;">${name}</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
-        <span style="color:#777;">Reference</span>
-        <span style="font-weight:600;">${reference}</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:10px 0 0; font-size:18px; font-weight:bold; color:#2E7D32;">
-        <span>Amount Paid</span>
-        <span>PKR ${amount.toLocaleString()}</span>
-      </div>
-      <div style="text-align:center; color:#aaa; font-size:12px; margin-top:16px; border-top:1px dashed #ccc; padding-top:10px;">
-        Shukriya! Dobara tashreef lain. 🙏
-      </div>
-      <div style="text-align:center; margin-top:20px;">
-        <button onclick="window.print()" style="background:#1565C0; color:white; border:none; padding:10px 24px; border-radius:8px; font-size:15px; cursor:pointer;">🖨️ Print</button>
-        <button onclick="window.close()" style="background:#eee; color:#333; border:none; padding:10px 24px; border-radius:8px; font-size:15px; cursor:pointer; margin-left:10px;">✖ Band</button>
-      </div>
-    </body></html>
-  `);
-  printWindow.document.close();
+  var w = window.open('', '_blank');
+  var html = '<!DOCTYPE html><html><head><title>Payment Receipt</title><style>';
+  html += 'body{font-family:Arial;padding:20px;max-width:400px;margin:0 auto}';
+  html += '.receipt-company{font-size:22px;font-weight:bold;color:#1565C0;text-align:center}';
+  html += '.receipt-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:14px}';
+  html += '.r-label{color:#777}.r-value{font-weight:600}';
+  html += '.footer{text-align:center;color:#aaa;font-size:12px;margin-top:16px;border-top:1px dashed #ccc;padding-top:10px}';
+  html += '</style></head><body>';
+  html += '<div class="receipt-company">🧊 Sindh Ice Factory</div>';
+  html += '<p style="text-align:center;color:#888;font-size:12px;margin:4px 0">Payment Receipt</p>';
+  html += '<p style="text-align:center;color:#aaa;font-size:12px;margin:4px 0">' + now + '</p>';
+  html += '<hr style="border:1px dashed #ccc;margin:10px 0">';
+  html += '<div class="receipt-row"><span class="r-label">Serial No.</span><span class="r-value" style="color:#1565C0">' + serial + '</span></div>';
+  html += '<div class="receipt-row"><span class="r-label">Dealer</span><span class="r-value">' + name + '</span></div>';
+  html += '<div class="receipt-row"><span class="r-label">Type</span><span class="r-value" style="background:#FFF8E1;color:#E65100;padding:2px 8px;border-radius:4px;font-size:12px">Payment</span></div>';
+  html += '<div class="receipt-row"><span class="r-label">Reference</span><span class="r-value">' + reference + '</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:18px;font-weight:bold;color:#2E7D32"><span>Amount Paid</span><span>PKR ' + amount.toLocaleString() + '</span></div>';
+  html += '<div class="footer">Shukriya! Dobara tashreef lain.</div>';
+  html += '</body></html>';
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  w.print();
+  w.onafterprint = function() { w.close(); };
 }
 
 async function deleteDealer() {
@@ -182,16 +167,11 @@ async function deleteDealer() {
   await DB.deleteDealer(currentDealer.id);
   window.location.href = '/dealers';
 }
-// ── Date Filter ──
+
 function filterHistory() {
   const date = document.getElementById('historyDate').value;
-  if (!date) {
-    renderHistoryData(allTransactions);
-    return;
-  }
-  const filtered = allTransactions.filter(t =>
-    t.date && t.date.startsWith(date)
-  );
+  if (!date) { renderHistoryData(allTransactions); return; }
+  const filtered = allTransactions.filter(t => t.date && t.date.startsWith(date));
   renderHistoryData(filtered);
 }
 
@@ -199,4 +179,3 @@ function clearFilter() {
   document.getElementById('historyDate').value = '';
   renderHistoryData(allTransactions);
 }
- 
