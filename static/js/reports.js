@@ -20,6 +20,8 @@ async function loadReport() {
   if (!selectedDate) return;
 
   const txns = await DB.getTransactionsByDate(selectedDate);
+  const exps = await fetch('/api/expenditures/date/' + selectedDate).then(r => r.json());
+  const totalExp = exps.reduce((sum, e) => sum + (e.amount || 0), 0);
 
   const cashSales = txns
     .filter(t => t.type === 'Cash')
@@ -37,8 +39,11 @@ async function loadReport() {
     'PKR ' + creditSales.toLocaleString();
   document.getElementById('statIce').textContent =
     totalIce + ' blocks';
+   document.getElementById('statExp').textContent =
+    'PKR ' + totalExp.toLocaleString();
+  const netTotal = cashSales + creditSales - totalExp;
   document.getElementById('statTotal').textContent =
-    'PKR ' + (cashSales + creditSales).toLocaleString();
+    'PKR ' + netTotal.toLocaleString();
 
   renderTable(txns);
 }
