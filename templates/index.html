@@ -171,6 +171,42 @@ function printReceipt() {
         .footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 16px; border-top: 1px dashed #ccc; padding-top: 10px; }
       </style>
     </head>
+    <script>
+// ── Particles ──
+function createParticles() {
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (Math.random() * 4 + 2) + 'px';
+    p.style.opacity = Math.random() * 0.4 + 0.1;
+    document.body.appendChild(p);
+  }
+}
+
+// ── Ripple Effect ──
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const rect = this.getBoundingClientRect();
+    ripple.style.width = ripple.style.height =
+      Math.max(rect.width, rect.height) + 'px';
+    ripple.style.left = e.clientX - rect.left -
+      parseInt(ripple.style.width)/2 + 'px';
+    ripple.style.top = e.clientY - rect.top -
+      parseInt(ripple.style.height)/2 + 'px';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+
+createParticles();
+</script>
+ 
+
     <body>
       <div class="receipt-company">🧊 Sindh Ice Factory</div>
       <p style="text-align:center; color:#888; font-size:12px; margin:4px 0;">${receiptDate}</p>
@@ -186,4 +222,4 @@ function printReceipt() {
 </script>
 </body>
 </html>
- 
+                         
