@@ -3,7 +3,6 @@ let selectedDate = '';
 
 window.onload = async function () {
   setToday();
-  await loadMonthlySummary();
 };
 
 function setToday() {
@@ -87,43 +86,6 @@ function renderTable(txns) {
     </table>`;
 }
 
-async function loadMonthlySummary() {
-  const summary = await DB.getMonthlySummary();
-  const container = document.getElementById('monthlySummary');
-  if (!summary || summary.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding:2rem; color:#aaa;"><p>Abhi koi data nahi</p></div>';
-    return;
-  }
-  container.innerHTML = `
-    <table class="txn-table">
-      <thead>
-        <tr>
-          <th>Month</th>
-          <th>Cash</th>
-          <th>Credit</th>
-          <th>Payments</th>
-          <th>Ice Sold</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${summary.map(s => {
-          const monthName = new Date(s.month + '-01').toLocaleDateString('en-PK', {month:'long', year:'numeric'});
-          const total = (s.cash || 0) + (s.credit || 0);
-          return `
-            <tr>
-              <td style="font-weight:600;">${monthName}</td>
-              <td class="text-green">PKR ${(s.cash || 0).toLocaleString()}</td>
-              <td class="text-red">PKR ${(s.credit || 0).toLocaleString()}</td>
-              <td class="text-blue">PKR ${(s.payments || 0).toLocaleString()}</td>
-              <td>${(s.ice || 0).toLocaleString()} blk</td>
-              <td style="font-weight:700; color:#1565C0;">PKR ${total.toLocaleString()}</td>
-            </tr>`;
-        }).join('')}
-      </tbody>
-    </table>`;
-}
-
 function handleSearchEnter(e) {
   if (e.key === 'Enter') searchReceipt();
 }
@@ -175,9 +137,6 @@ function printSearchReceipt(txn) {
   html += '.receipt-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:14px}';
   html += '.receipt-total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;color:#1565C0;padding-top:10px}';
   html += '.r-label{color:#777}.r-value{font-weight:600}';
-  html += '.badge-blue{background:#E3F2FD;color:#1565C0;padding:2px 8px;border-radius:4px;font-size:12px}';
-  html += '.badge-green{background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:4px;font-size:12px}';
-  html += '.badge-orange{background:#FFF8E1;color:#E65100;padding:2px 8px;border-radius:4px;font-size:12px}';
   html += '.footer{text-align:center;color:#aaa;font-size:12px;margin-top:16px;border-top:1px dashed #ccc;padding-top:10px}';
   html += '</style></head><body>';
   html += '<div class="receipt-company">🧊 Sindh Ice Factory</div>';
@@ -257,4 +216,3 @@ async function saveEditReceipt(id) {
   document.getElementById('searchResult').innerHTML = '';
   await loadReport();
 }
- 
