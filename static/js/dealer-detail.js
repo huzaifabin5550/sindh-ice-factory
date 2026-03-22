@@ -94,13 +94,19 @@ function renderHistoryData(txns) {
     </table>`;
 }
 
-async function openPayDebt() {
+ async function openPayDebt() {
   const freshDealer = await DB.getDealer(currentDealer.id);
   const balance = freshDealer.balance || 0;
   if (balance <= 0) { alert('✅ Is dealer ka koi qarz nahi hai!'); return; }
   document.getElementById('modalDebt').textContent = 'PKR ' + balance.toLocaleString();
   document.getElementById('payAmount').value = '';
   document.getElementById('payReference').value = '';
+
+  // ✅ Set today's date as default
+  const today = new Date();
+  const pkDate = new Date(today.getTime() + 5 * 60 * 60 * 1000);
+  document.getElementById('payDate').value = pkDate.toISOString().slice(0, 10);
+
   document.getElementById('payDebtModal').classList.remove('hidden');
 }
 
@@ -108,15 +114,20 @@ function closePayDebt() {
   document.getElementById('payDebtModal').classList.add('hidden');
 }
 
-async function submitPayment() {
+ async function submitPayment() {
   const amount = parseFloat(document.getElementById('payAmount').value);
   const reference = document.getElementById('payReference').value;
+  const selectedDate = document.getElementById('payDate').value; // ✅ Get selected date
+
   const freshDealer = await DB.getDealer(currentDealer.id);
   const balance = freshDealer.balance || 0;
   if (!amount || amount <= 0) { alert('❌ Amount dalein!'); return; }
+  if (!selectedDate) { alert('❌ Date select karein!'); return; } // ✅ Validate date
   if (amount > balance) { alert('❌ Amount baqi se zyada hai! Baqi: PKR ' + balance.toLocaleString()); return; }
-  const now = new Date();
-  const pkDate = new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString().slice(0, 19);
+
+  // ✅ Use selected date instead of current time
+  const pkDate = selectedDate + 'T00:00:00';
+
   const result = await DB.addTransaction({
     dealerId: currentDealer.id,
     dealerName: currentDealer.name,

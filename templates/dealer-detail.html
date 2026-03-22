@@ -133,6 +133,23 @@
       <input type="text" id="payReference"
         placeholder="e.g. Cash in hand" />
     </div>
+    <div class="field-group">
+  <label class="field-label">📅 Payment Date</label>
+  <input type="date" id="payDate" />
+</div>
+<div class="field-group">
+  <label class="field-label">📅 Payment Date</label>
+  <input type="date" id="payDate" />
+</div>
+
+<div class="grid-2" style="gap:8px; margin-top:6px;">
+  <button class="btn btn-success" onclick="submitPayment()">
+    ✅ Payment Save Karein
+  </button>
+  <button class="btn btn-secondary" onclick="closePayDebt()">
+    ✖ Cancel
+  </button>
+</div>
 
     <div class="grid-2" style="gap:8px; margin-top:6px;">
       <button class="btn btn-success" onclick="submitPayment()">
