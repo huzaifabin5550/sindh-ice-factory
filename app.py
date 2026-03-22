@@ -63,6 +63,11 @@ def dealer_detail():
 def reports():
     return render_template('reports.html')
 
+    @app.route('/monthly')
+@login_required
+def monthly():
+    return render_template('monthly.html')
+
 @app.route('/expenditures')
 @login_required
 def expenditures():

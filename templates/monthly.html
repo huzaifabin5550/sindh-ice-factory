@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sindh Ice Factory — Monthly Summary</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
+  </div>
+  <div class="navbar-links">
+    <a href="/">POS</a>
+    <a href="/dealers">Dealers</a>
+    <a href="/reports">Reports</a>
+    <a href="/monthly" class="active">📆 Monthly</a>
+    <a href="/expenditures">💸 Expenditures</a>
+    <a href="/reset" style="color:#ffcdd2;">🗑 Reset</a>
+    <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div style="margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:600;">📆 Monthly Summary</h2>
+    <p style="font-size:13px; color:#888; margin-top:3px;">
+      Poore mahine ki complete daily breakdown
+    </p>
+  </div>
+
+  <!-- Month Picker -->
+  <div class="card" style="padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <label style="font-size:14px; color:#555; font-weight:500;">
+        📅 Month:
+      </label>
+      <input type="month" id="monthPicker"
+        style="width:auto; padding:8px 12px;"
+        onchange="loadMonthly()" />
+      <button class="btn btn-secondary"
+        style="width:auto; padding:8px 14px; font-size:13px;"
+        onclick="setThisMonth()">
+        Is Mahina
+      </button>
+    </div>
+  </div>
+
+  <!-- Monthly Totals -->
+  <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+    <div class="stat-card">
+      <div class="s-label">💵 Total Cash Sales</div>
+      <div class="s-value text-green" id="mCash">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">📋 Total Credit Sales</div>
+      <div class="s-value text-red" id="mCredit">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🧊 Total Ice Sold</div>
+      <div class="s-value text-blue" id="mIce">0 blocks</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💰 Total Earnings</div>
+      <div class="s-value" id="mEarnings">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💸 Total Expenses</div>
+      <div class="s-value text-red" id="mExpense">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💳 Total Payments</div>
+      <div class="s-value text-green" id="mPayments">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🏦 Net Balance</div>
+      <div class="s-value text-blue" id="mNet">PKR 0</div>
+    </div>
+  </div>
+
+  <!-- Daily Table -->
+  <div class="card">
+    <div class="card-title" id="tableTitle">📋 Daily Breakdown</div>
+    <div id="monthlyTable"></div>
+  </div>
+
+</div>
+
+<script src="/static/js/storage.js"></script>
+<script src="/static/js/monthly.js"></script>
+</body>
+</html>
