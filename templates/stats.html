@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sindh Ice Factory — Stats</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
+  </div>
+  <div class="navbar-links">
+    <a href="/">POS</a>
+    <a href="/dealers">Dealers</a>
+    <a href="/reports">Reports</a>
+    <a href="/stats" class="active">📊 Stats</a>
+    <a href="/expenditures">💸 Expenditures</a>
+    <a href="/reset" style="color:#ffcdd2;">🗑 Reset</a>
+    <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div style="margin-bottom:16px;">
+    <h2 style="font-size:20px; font-weight:600;">📊 Statistics</h2>
+    <p style="font-size:13px; color:#888; margin-top:3px;">
+      Complete business overview
+    </p>
+  </div>
+
+  <!-- Overall Stats -->
+  <div class="card-title" style="margin-bottom:8px;">
+    Overall Summary
+  </div>
+  <div class="stats-grid" style="grid-template-columns:repeat(2,1fr); margin-bottom:20px;">
+    <div class="stat-card">
+      <div class="s-label">👥 Total Dealers</div>
+      <div class="s-value text-blue" id="totalDealers">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🧾 Total Receipts</div>
+      <div class="s-value text-blue" id="totalReceipts">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🧊 Total Ice Sold</div>
+      <div class="s-value text-blue" id="totalIce">0 blocks</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💰 Total Revenue</div>
+      <div class="s-value text-green" id="totalRevenue">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">📋 Total Credit</div>
+      <div class="s-value text-red" id="totalCredit">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💵 Total Cash</div>
+      <div class="s-value text-green" id="totalCash">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💰 Total Payments</div>
+      <div class="s-value text-green" id="totalPayments">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">💸 Total Expenditures</div>
+      <div class="s-value text-red" id="totalExp">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🔥 Total Baqi (Credit)</div>
+      <div class="s-value text-red" id="totalBalances">PKR 0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">🏦 Net Balance</div>
+      <div class="s-value text-blue" id="netBalance">PKR 0</div>
+    </div>
+  </div>
+
+  <!-- Dealer Wise Stats -->
+  <div class="card-title" style="margin-bottom:8px;">
+    Dealer Wise Summary
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div id="dealerStats"></div>
+  </div>
+
+  <!-- Monthly Stats -->
+  <div class="card-title" style="margin-bottom:8px;">
+    Monthly Summary
+  </div>
+  <div class="card">
+    <div id="monthlyStats"></div>
+  </div>
+
+</div>
+
+<script src="/static/js/storage.js"></script>
+<script src="/static/js/stats.js"></script>
+</body>
+</html>

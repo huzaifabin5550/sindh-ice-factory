@@ -72,6 +72,11 @@ def monthly():
 @login_required
 def expenditures():
     return render_template('expenditures.html')
+    
+    @app.route('/stats')
+@login_required
+def stats():
+    return render_template('stats.html')
 
 @app.route('/reset', methods=['GET', 'POST'])
 @login_required
