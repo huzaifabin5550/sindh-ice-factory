@@ -72,7 +72,7 @@ def monthly():
 @login_required
 def expenditures():
     return render_template('expenditures.html')
-    
+
     @app.route('/stats')
 @login_required
 def stats():
@@ -239,6 +239,33 @@ def api_delete_expenditure(id):
 @login_required
 def api_monthly_expenditures():
     return jsonify(get_monthly_expenditures())
+    @app.route('/reminders')
+@login_required
+def reminders():
+    return render_template('reminders.html')
+@app.route('/api/reminders', methods=['GET'])
+@login_required
+def api_get_reminders():
+    return jsonify(get_all_reminders())
+@app.route('/api/reminders', methods=['POST'])
+@login_required
+def api_add_reminder():
+    data = request.json
+    title = data.get('title', '').strip()
+    if not title:
+        return jsonify({'error': 'Title dalein!'}), 400
+    add_reminder(title=title, description=data.get('description', ''), reminder_date=data.get('reminder_date', ''))
+    return jsonify({'success': True, 'message': 'Reminder add ho gaya!'})
+@app.route('/api/reminders/<int:id>/done', methods=['PUT'])
+@login_required
+def api_mark_done(id):
+    mark_reminder_done(id)
+    return jsonify({'success': True})
+@app.route('/api/reminders/<int:id>', methods=['DELETE'])
+@login_required
+def api_delete_reminder(id):
+    delete_reminder(id)
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -1,0 +1,131 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sindh Ice Factory — Reminders</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a href="/" style="color:white; text-decoration:none;">
+      🧊 Sindh Ice Factory
+    </a>
+  </div>
+  <div class="navbar-links">
+    <a href="/">POS</a>
+    <a href="/dealers">Dealers</a>
+    <a href="/reports">Reports</a>
+    <a href="/stats">📊 Stats</a>
+    <a href="/expenditures">💸 Expenditures</a>
+    <a href="/reminders" class="active">🔔 Reminders</a>
+    <a href="/reset" style="color:#ffcdd2;">🗑 Reset</a>
+    <a href="/logout" style="color:#ffcdd2;">🚪 Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div style="display:flex; justify-content:space-between;
+    align-items:center; margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px; font-weight:600;">
+        🔔 Reminders
+      </h2>
+      <p style="font-size:13px; color:#888; margin-top:3px;">
+        Important kaam yaad rakhne ke liye
+      </p>
+    </div>
+    <button class="btn btn-primary"
+      style="width:auto; padding:10px 20px;"
+      onclick="openModal()">
+      + Add Reminder
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="stat-card">
+      <div class="s-label">📋 Total</div>
+      <div class="s-value text-blue" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">⏰ Pending</div>
+      <div class="s-value text-red" id="statPending">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-label">✅ Done</div>
+      <div class="s-value text-green" id="statDone">0</div>
+    </div>
+  </div>
+
+  <!-- Reminders List -->
+  <div class="card">
+    <div class="card-title">Aaj Ke Reminders</div>
+    <div id="todayList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Upcoming Reminders</div>
+    <div id="upcomingList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Overdue Reminders</div>
+    <div id="overdueList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Completed Reminders</div>
+    <div id="doneList"></div>
+  </div>
+
+</div>
+
+<!-- Add Reminder Modal -->
+<div class="modal-overlay hidden" id="addModal">
+  <div class="modal-box">
+    <div class="modal-title">🔔 Naya Reminder Add Karein</div>
+
+    <div class="field-group">
+      <label class="field-label">Title *</label>
+      <input type="text" id="remTitle"
+        placeholder="e.g. Ali Trader ka payment lena hai" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Description (optional)</label>
+      <input type="text" id="remDesc"
+        placeholder="Extra details..." />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Date & Time *</label>
+      <input type="datetime-local" id="remDate" />
+    </div>
+
+    <div class="grid-2" style="gap:8px; margin-top:6px;">
+      <button class="btn btn-primary" onclick="saveReminder()">
+        ✅ Save Karein
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">
+        ✖ Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/storage.js"></script>
+<script src="/static/js/reminders.js"></script>
+</body>
+</html>
+
+
+
+
+
+now make me reminder.js !!
+```

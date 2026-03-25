@@ -15,6 +15,7 @@ def init_db():
     c.execute('CREATE TABLE IF NOT EXISTS dealers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT, cnic TEXT, location TEXT, address TEXT, balance REAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)')
     c.execute('CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, serial_number TEXT, dealer_id INTEGER, dealer_name TEXT, type TEXT, qty REAL DEFAULT 0, price REAL DEFAULT 0, total REAL DEFAULT 0, reference TEXT, date TEXT DEFAULT CURRENT_TIMESTAMP)')
     c.execute('CREATE TABLE IF NOT EXISTS expenditures (id INTEGER PRIMARY KEY AUTOINCREMENT, amount REAL NOT NULL, reason TEXT, date TEXT DEFAULT CURRENT_TIMESTAMP)')
+    c.execute('CREATE TABLE IF NOT EXISTS reminders (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT, reminder_date TEXT NOT NULL, is_done INTEGER DEFAULT 0, created_at TEXT DEFAULT CURRENT_TIMESTAMP)')
     conn.commit()
     conn.close()
     print("Database ready!")
@@ -154,3 +155,23 @@ def get_monthly_expenditures():
     exps = conn.execute('SELECT substr(date,1,7) as month, SUM(amount) as total FROM expenditures GROUP BY month ORDER BY month DESC').fetchall()
     conn.close()
     return [dict(e) for e in exps]
+def add_reminder(title, description, reminder_date):
+    conn = get_db()
+    conn.execute('INSERT INTO reminders (title, description, reminder_date) VALUES (?, ?, ?)', (title, description, reminder_date))
+    conn.commit()
+    conn.close()
+def get_all_reminders():
+    conn = get_db()
+    reminders = conn.execute('SELECT * FROM reminders ORDER BY reminder_date ASC').fetchall()
+    conn.close()
+    return [dict(r) for r in reminders]
+def mark_reminder_done(id):
+    conn = get_db()
+    conn.execute('UPDATE reminders SET is_done=1 WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+def delete_reminder(id):
+    conn = get_db()
+    conn.execute('DELETE FROM reminders WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
