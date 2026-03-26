@@ -4,6 +4,7 @@
 
 const DB = {
 
+
   // ── Dealers ──
   async getDealers() {
     const res = await fetch('/api/dealers');
@@ -105,6 +106,46 @@ const DB = {
 
   async getMonthlySummary() {
     const res = await fetch('/api/monthly-summary');
+    return await res.json();
+  },
+
+  // ── Alias Functions ──
+  async getAllTransactions() {
+    return this.getTransactions();
+  },
+
+  async getAllDealers() {
+    return this.getDealers();
+  },
+  // ── Expenditures ──
+  async getExpenditures() {
+    const res = await fetch('/api/expenditures');
+    return await res.json();
+  },
+
+  async addExpenditure(exp) {
+    const res = await fetch('/api/expenditures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(exp)
+    });
+    return await res.json();
+  },
+
+  async deleteExpenditure(id) {
+    const res = await fetch(`/api/expenditures/${id}`, {
+      method: 'DELETE'
+    });
+    return await res.json();
+  },
+
+  async getExpendituresByDate(date) {
+    const res = await fetch(`/api/expenditures/date/${date}`);
+    return await res.json();
+  },
+
+  async getMonthlyExpenditures() {
+    const res = await fetch('/api/monthly-expenditures');
     return await res.json();
   }
 };

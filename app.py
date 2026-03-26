@@ -63,7 +63,7 @@ def dealer_detail():
 def reports():
     return render_template('reports.html')
 
-    @app.route('/monthly')
+@app.route('/monthly')
 @login_required
 def monthly():
     return render_template('monthly.html')
@@ -73,7 +73,7 @@ def monthly():
 def expenditures():
     return render_template('expenditures.html')
 
-    @app.route('/stats')
+@app.route('/stats')
 @login_required
 def stats():
     return render_template('stats.html')
@@ -239,7 +239,8 @@ def api_delete_expenditure(id):
 @login_required
 def api_monthly_expenditures():
     return jsonify(get_monthly_expenditures())
-    @app.route('/reminders')
+
+@app.route('/reminders')
 @login_required
 def reminders():
     return render_template('reminders.html')
